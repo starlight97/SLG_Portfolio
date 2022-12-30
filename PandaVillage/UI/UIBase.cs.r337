@@ -1,0 +1,50 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Events;
+
+public class UIBase : MonoBehaviour
+{
+    protected UIInGameMenu uiInGameMenu;
+    protected UIMenu uiMenu;
+    public UnityAction<int> onClickItem;
+    virtual public void Init()
+    {
+        this.uiInGameMenu = transform.Find("UIInGameMenu").GetComponent<UIInGameMenu>();
+        this.uiMenu = transform.Find("UIMenu").GetComponent<UIMenu>();
+
+
+        this.uiInGameMenu.Init();
+        this.uiMenu.Init();
+
+        this.uiInGameMenu.onClickItem = (id) => {
+            this.onClickItem(id);        
+        };
+        this.uiInGameMenu.onClickUIMenuButton = () => {
+            this.uiInGameMenu.gameObject.SetActive(false);
+            this.uiMenu.gameObject.SetActive(true);
+            this.uiMenu.RePainting(36);
+            TimeManager.instance.Pause();
+        };
+        this.uiMenu.onClickCloseMenuButton = () => {
+            this.uiInGameMenu.gameObject.SetActive(true);
+            this.uiMenu.gameObject.SetActive(false);
+            this.uiInGameMenu.RePainting(12);
+            TimeManager.instance.Resume();
+        };
+
+
+    }
+
+    public void UpdateInventory()
+    {
+
+        this.uiInGameMenu.RePainting(12);
+        //this.uiInGameMenu.uiInventoryInGame.Init(UIInventory.eInventoryType.InGame, 12);
+    }
+
+    public void TimeUpdate(int hour, int minute)
+    {
+        this.uiInGameMenu.uiDateTime.SetUITimeText(hour, minute);
+    }
+}
